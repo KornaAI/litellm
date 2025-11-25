@@ -6858,7 +6858,7 @@ def convert_to_dict(message: Union[BaseModel, dict]) -> dict:
         dict: The converted message.
     """
     if isinstance(message, BaseModel):
-        return message.model_dump(exclude_none=True)
+        return message.model_dump(exclude_none=True)  # type: ignore
     elif isinstance(message, dict):
         return message
     else:
@@ -7141,6 +7141,8 @@ class ProviderConfigManager:
             return litellm.AzureAIStudioConfig()
         elif litellm.LlmProviders.AZURE_TEXT == provider:
             return litellm.AzureOpenAITextConfig()
+        elif litellm.LlmProviders.AZURE_ANTHROPIC == provider:
+            return litellm.AzureAnthropicConfig()
         elif litellm.LlmProviders.HOSTED_VLLM == provider:
             return litellm.HostedVLLMChatConfig()
         elif litellm.LlmProviders.NLP_CLOUD == provider:
@@ -7334,6 +7336,12 @@ class ProviderConfigManager:
                 )
 
                 return VertexAIPartnerModelsAnthropicMessagesConfig()
+        elif litellm.LlmProviders.AZURE_ANTHROPIC == provider:
+            from litellm.llms.azure.anthropic.messages_transformation import (
+                AzureAnthropicMessagesConfig,
+            )
+
+            return AzureAnthropicMessagesConfig()
         return None
 
     @staticmethod
@@ -7680,6 +7688,12 @@ class ProviderConfigManager:
             )
 
             return get_runwayml_image_generation_config(model)
+        elif LlmProviders.VERTEX_AI == provider:
+            from litellm.llms.vertex_ai.image_generation import (
+                get_vertex_ai_image_generation_config,
+            )
+
+            return get_vertex_ai_image_generation_config(model)
         return None
 
     @staticmethod
